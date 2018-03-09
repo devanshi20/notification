@@ -54,12 +54,14 @@ public class SignIn extends AppCompatActivity {
             edtPhone.setError(null);
         }
 
-        if (password.isEmpty()) {
+        if(password.isEmpty()) {
             edtPassword.setError("between 4 and 10 alphanumeric characters");
             valid = false;
         } else {
             edtPassword.setError(null);
         }
+
+
 
         return valid;
     }
@@ -102,55 +104,64 @@ public class SignIn extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
             @Override
             public void onClick(View view) {
+                String phone = edtPhone.getText().toString();
+                String password = edtPassword.getText().toString();
 
-                if (Common.isConnectedToInternet(getBaseContext())) {
+                if (phone.isEmpty() && password.isEmpty()) {
+                    edtPhone.setError("Required");
+                    edtPassword.setError("Required");
+                }
+                else {
 
-
-                    if (ckbRemember.isChecked()) {
-                        Paper.book().write(Common.USER_KEY, edtPhone.getText().toString());
-                        Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
-                    }
-
-                    validate();
-                    final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
-                    mDialog.setMessage("Please wait");
-                   mDialog.show();
+                    if (Common.isConnectedToInternet(getBaseContext())) {
 
 
-                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.child(edtPhone.getText().toString()).exists()) {
-                                mDialog.dismiss();
-                                User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
-                                user.setPhone(edtPhone.getText().toString());
+                        if (ckbRemember.isChecked()) {
+                            Paper.book().write(Common.USER_KEY, edtPhone.getText().toString());
+                            Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
+                        }
+
+                        validate();
+                        final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
+                        mDialog.setMessage("Please wait");
+                        mDialog.show();
 
 
-                                if (user.getPassword().equals(edtPassword.getText().toString())) {
-                                    Intent homeIntent = new Intent(SignIn.this, Home.class);
-                                    Common.currentUser = user;
-                                    startActivity(homeIntent);
-                                    finish();
+                        table_user.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.child(edtPhone.getText().toString()).exists()) {
+                                    mDialog.dismiss();
+                                    User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
+                                    user.setPhone(edtPhone.getText().toString());
 
-                                    table_user.removeEventListener(this);
+
+                                    if (user.getPassword().equals(edtPassword.getText().toString())) {
+                                        Intent homeIntent = new Intent(SignIn.this, Home.class);
+                                        Common.currentUser = user;
+                                        startActivity(homeIntent);
+                                        finish();
+
+                                        table_user.removeEventListener(this);
+                                    } else {
+                                        Toast.makeText(SignIn.this, "Sign in failed", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
-                                    Toast.makeText(SignIn.this, "Sign in failed", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
 
-                                Toast.makeText(SignIn.this, "User does not exist.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignIn.this, "User does not exist.", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
 
-                        }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                } else {
-                    Toast.makeText(SignIn.this, "Please check your connection", Toast.LENGTH_SHORT).show();
-                    return;
+                            }
+                        });
+                    } else {
+                        Toast.makeText(SignIn.this, "Please check your connection", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
 
 

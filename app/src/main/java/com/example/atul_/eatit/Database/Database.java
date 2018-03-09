@@ -135,11 +135,9 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void cleanCart() {
-        SQLiteDatabase db = getReadableDatabase();
-        String query = String.format("DELETE FROM OrderDetail");
-
-
-        db.execSQL(query);
+         db = getReadableDatabase();
+         String query = String.format("DELETE FROM OrderDetail");
+         db.execSQL(query);
 
     }
 
@@ -158,7 +156,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void getAData(){
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
         String query=String.format("SELECT * FROM OrderDetail");
         Cursor cursor=db.rawQuery(query,null);
         if (cursor.getCount()<=0)
@@ -167,7 +165,6 @@ public class Database extends SQLiteOpenHelper {
 
         }
         cursor.close();
-
     }
 
    public boolean isFavorites(String foodId)

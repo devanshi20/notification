@@ -35,9 +35,10 @@ public class OrderStatus extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
+          if(getIntent()==null)
         loadOrders(Common.currentUser.getPhone());
-
+          else
+              loadOrders(getIntent().getStringExtra("userPhone"));
     }
 
     private void loadOrders(String phone) {
